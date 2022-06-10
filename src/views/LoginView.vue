@@ -56,29 +56,29 @@ export default {
     async login() {
       if (this.$refs.form.validate()) {
         try {
-          const token = await this.axios.post("/login", {
+          const token = await this.axios.post("/users/login", {
             username: this.username,
             password: this.password,
           });
-          this.$store.commit("setToken", token.data.token);
-          localStorage.setItem("token", token.data.token);
-          this.$store.commit("setUser", {
-            username: token.data.username,
-            userId: token.data.userId,
-          });
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              username: token.data.username,
-              userId: token.data.userId,
-            })
-          );
 
-          this.$router.push("/");
+          let user = this.$jwt.decode(token.data);
+
+          this.$store.commit("setToken", token.data);
+          localStorage.setItem("token", token.data);
+          this.$store.commit("setUser", user);
+          localStorage.setItem("user", JSON.stringify(user));
+          this.$toasted.success("تم تسجيل الدخول بنجاح", {
+            duration: 3000,
+            position: "top-center",
+          });
+
+          if(this.$route.path !== '/') {
+            this.$router.push('/');
+          }
         } catch (error) {
           this.$refs.form.validate();
-          console.error(error.response.data);
-          this.$toasted.error(error.response.data.message, {
+          console.error(error);
+          this.$toasted.error('حدث خطأ في تسجيل الدخول', {
             position: "top-center",
             duration: 3000,
           });

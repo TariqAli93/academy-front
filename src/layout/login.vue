@@ -2,8 +2,10 @@
   <v-app>
     <v-main>
       <div class="login-container">
-        <h1>برنامج المعهد الالكتروني</h1>
-        <login-view />
+        <h1>{{ settings.appName }}</h1>
+        <div class="form-container">
+          <login-view />
+        </div>
       </div>
     </v-main>
   </v-app>
@@ -11,7 +13,12 @@
 
 <script>
 import LoginView from "@/views/LoginView.vue";
+import settings from "@/settings";
 export default {
+  data: () => ({
+    settings: settings,
+  }),
+  
   components: {
     LoginView,
   },
@@ -27,6 +34,7 @@ export default {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  box-shadow: 0px 0px 10px 0px rgba(blue, 1);
 
   h1 {
     display: block;
@@ -34,6 +42,14 @@ export default {
     margin-bottom: 1em;
     font-size: 2.5em;
     font-weight: 900;
+  }
+
+  .form-container {
+    padding: 2em;
+    box-shadow: 15px -20px 45px -43px hsl(240deg 100% 50% / 42%),
+      -15px -20px 45px -43px hsl(240deg 100% 50% / 42%);
+    background-color: white;
+    border-radius: 1em;
   }
 }
 </style>

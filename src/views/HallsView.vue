@@ -4,14 +4,14 @@
     <v-card elevation="0" class="mb-5">
       <v-toolbar elevation="0" class="transparent">
         <v-toolbar-title>
-          <span class="primary--text text-3">الصفوف</span>
+          <span class="primary--text text-3">القاعات</span>
         </v-toolbar-title>
 
         <v-spacer />
 
         <v-text-field
           v-model="search"
-          label="ابحث عن صف"
+          label="ابحث عن قاعة"
           dense
           color="primary"
           hide-details
@@ -24,7 +24,7 @@
           @click="openCreate"
         >
           <v-icon>add</v-icon>
-          <span>اضافة صف</span>
+          <span>اضافة قاعة</span>
         </v-btn>
       </v-toolbar>
     </v-card>
@@ -33,7 +33,7 @@
     <!-- students list -->
     <v-card elevation="0">
       <v-data-table
-        :items="classes"
+        :items="halls"
         :headers="headers"
         :search="search"
         class="transparent elevation-0"
@@ -43,7 +43,7 @@
             small
             class="mr-2"
             @click="edit(item)"
-            :title="`تعديل ${item.gradeName}`"
+            :title="`تعديل ${item.hallName}`"
           >
             edit
           </v-icon>
@@ -51,7 +51,7 @@
             small
             class="mr-2"
             @click="confirmDelete(item)"
-            :title="`حذف ${item.gradeName}`"
+            :title="`حذف ${item.hallName}`"
           >
             delete
           </v-icon>
@@ -66,8 +66,8 @@
 
 <script>
 import { bus } from "@/main";
-import createComponent from '@/components/classes/create.vue'
-import updateComponent from '@/components/classes/update.vue'
+import createComponent from '@/components/halls/create.vue'
+import updateComponent from '@/components/halls/update.vue'
 export default {
   data() {
     return {
@@ -76,13 +76,13 @@ export default {
           text: "#",
           align: "start",
           sortable: false,
-          value: "gradeId",
+          value: "hallId",
         },
         {
-          text: "الصف",
+          text: "اسم القاعة",
           align: "start",
           sortable: false,
-          value: "gradeName",
+          value: "hallName",
         },
         {
           text: "الاجراءات",
@@ -91,7 +91,7 @@ export default {
           value: "actions",
         },
       ],
-      classes: [],
+      halls: [],
       search: "",
     };
   },
@@ -102,7 +102,7 @@ export default {
   },
 
   mounted() {
-    bus.$on("class-created", () => {
+    bus.$on("hall-created", () => {
       this.fetch();
     });
     this.fetch();
@@ -111,8 +111,8 @@ export default {
   methods: {
     async fetch() {
       try {
-        const classes = await this.axios.get("grades");
-        this.classes = classes.data.data;
+        const { data } = await this.axios.get("halls");
+        this.halls = data;
       } catch (error) {
         console.error(error);
       }
@@ -127,15 +127,15 @@ export default {
     },
 
     confirmDelete(item) {
-      this.$toasted.error("هل تريد حذف الصف ؟", {
+      this.$toasted.error("هل تريد حذف القاعة ؟", {
         theme: "outline",
         position: "bottom-center",
         duration: 6000,
         action: [
           {
-            text: "حذف الصف",
+            text: "حذف القاعة",
             onClick: () => {
-              this.deleteClass(item);
+              this.deleteHall(item);
               this.$toasted.clear();
             },
           },
@@ -149,9 +149,9 @@ export default {
       });
     },
 
-    async deleteClass(item) {
+    async deleteHall(item) {
       try {
-        await this.axios.delete(`grades/${item.gradeId}`);
+        await this.axios.delete(`halls/${item.hallId}`);
         this.fetch()
       } catch (error) {
         console.error(error);

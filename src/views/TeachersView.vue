@@ -1,108 +1,5 @@
 <template>
   <div class="TeachersPage">
-    <v-dialog
-      v-model="newTeacherDialog"
-      persistent
-      max-width="500px"
-      transition="slide-y-transition"
-    >
-      <v-card elevation="0">
-        <v-toolbar elevation="0" class="transparent border-bottom">
-          <v-toolbar-title>اضافة استاذ</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon @click.stop="newTeacherDialog = false">
-            <v-icon>close</v-icon>
-          </v-btn>
-        </v-toolbar>
-
-        <v-divider />
-
-        <v-card-text class="mt-5">
-          <v-form
-            ref="createRef"
-            v-model="createForm"
-            lazy-validation
-            @submit.prevent="createTeacher"
-          >
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="teacherName"
-                  label="اسم الاستاذ"
-                  required
-                  outlined
-                  dense
-                  :rules="[(v) => !!v || 'الرجاء إدخال اسم الاستاذ']"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-
-            <v-btn
-              block
-              large
-              color="primary"
-              depressed
-              :disabled="!createForm"
-              type="submit"
-            >
-              اضافة الاستاذ
-            </v-btn>
-          </v-form>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog
-      v-model="updateTeacherDialog"
-      persistent
-      max-width="500px"
-      transition="slide-y-transition"
-    >
-      <v-card elevation="0">
-        <v-toolbar elevation="0" class="transparent border-bottom">
-          <v-toolbar-title>تحديث الاستاذ</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon @click.stop="updateTeacherDialog = false">
-            <v-icon>close</v-icon>
-          </v-btn>
-        </v-toolbar>
-
-        <v-divider />
-
-        <v-card-text class="mt-5">
-          <v-form
-            ref="updateRef"
-            v-model="updateForm"
-            lazy-validation
-            @submit.prevent="updateTeacher"
-          >
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="teacherName"
-                  label="اسم الاستاذ"
-                  required
-                  outlined
-                  dense
-                  :rules="[(v) => !!v || 'الرجاء إدخال اسم الاستاذ']"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-
-            <v-btn
-              block
-              large
-              color="primary"
-              depressed
-              :disabled="!updateForm"
-              type="submit"
-            >
-              تحديث الاستاذ
-            </v-btn>
-          </v-form>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
     <v-card elevation="0" class="mb-5">
       <v-toolbar elevation="0" class="transparent">
         <v-toolbar-title>
@@ -112,7 +9,6 @@
         <v-spacer />
 
         <v-text-field
-          outlined
           v-model="search"
           label="ابحث عن استاذ"
           dense
@@ -124,7 +20,7 @@
           color="primary"
           class="mr-5"
           depressed
-          @click="newTeacherDialog = true"
+          @click="createDialog = true"
         >
           <v-icon>add</v-icon>
           <span>اضافة استاذ</span>
@@ -139,11 +35,24 @@
         :search="search"
         class="transparent elevation-0"
       >
+
+      <template #[`item.user.userName`]="{ item }">
+        <v-chip>{{ item.user.userName }}</v-chip>
+      </template>
+
+      <template #[`item.createdAt`]="{ item }">
+        <v-chip color="success">{{ item.createdAt | formatDate }}</v-chip>
+      </template>
+
+      <template #[`item.updatedAt`]="{ item }">
+        <v-chip color="warning" text-color="black">{{ item.updatedAt | formatDate }}</v-chip>
+      </template>
+
         <template #[`item.actions`]="{ item }">
           <v-icon
             small
             class="mr-2"
-            @click="editTeacher(item)"
+            @click="edit(item)"
             :title="`تعديل ${item.teacherName}`"
           >
             edit
@@ -159,21 +68,124 @@
         </template>
       </v-data-table>
     </v-card>
+
+    <!-- update dialog -->
+    <v-dialog v-model="editDialog" persistent max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">تعديل البيانات</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-form ref="editFormRef" v-model="editFormModel" lazy-validation>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="اسم الاستاذ"
+                    v-model="teacherForm.teacherName"
+                    :rules="rules"
+                    required
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12">
+                  <v-text-field
+                    label="التخصص"
+                    v-model="teacherForm.specialization"
+                    :rules="rules"
+                    required
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12">
+                  <v-text-field
+                    label="رقم الهاتف"
+                    v-model="teacherForm.phone"
+                    :rules="rules"
+                    required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-btn color="success" :disabled="!editFormModel" @click="update">
+            حفظ التعديلات
+          </v-btn>
+
+          <v-btn color="error" @click="cancelEdit"> إلغاء التعديلات </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- create dialog -->
+    <v-dialog v-model="createDialog" persistent max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">اضافة بيانات جديدة</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-form
+              ref="createFormRef"
+              v-model="createFormModel"
+              lazy-validation
+            >
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="اسم الاستاذ"
+                    v-model="teacherForm.teacherName"
+                    :rules="rules"
+                    required
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12">
+                  <v-text-field
+                    label="التخصص"
+                    v-model="teacherForm.specialization"
+                    :rules="rules"
+                    required
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12">
+                  <v-text-field
+                    label="رقم الهاتف"
+                    v-model="teacherForm.phone"
+                    :rules="rules"
+                    required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-btn color="success" :disabled="!createFormModel" @click="create">
+            حفظ البيانات
+          </v-btn>
+
+          <v-btn color="error" @click="createDialog = false">
+            إلغاء الامر
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import moment from "moment";
 export default {
   name: "TeachersPage",
   data() {
     return {
       search: "",
-      newTeacherDialog: false,
-      updateTeacherDialog: false,
-      createForm: false,
-      teacherName: "",
-      teacherId: "",
-      updateForm: false,
       headers: [
         {
           text: "#",
@@ -181,21 +193,42 @@ export default {
           sortable: false,
           align: "start",
         },
-
         {
           text: "اسم الاستاذ",
           value: "teacherName",
           sortable: false,
           align: "start",
         },
-
         {
-          text: "تاريخ انشاء الحساب",
+          text: "رقم الهاتف",
+          value: "phone",
+          sortable: false,
+          align: "start",
+        },
+        {
+          text: "التخصص",
+          value: "specialization",
+          sortable: false,
+          align: "start",
+        },
+        {
+          text: "بواسطة",
+          value: "user.userName",
+          sortable: false,
+          align: "start",
+        },
+        {
+          text: "تاريخ الانشاء",
           value: "createdAt",
           sortable: false,
           align: "start",
         },
-
+        {
+          text: "تاريخ اخر تعديل",
+          value: "updatedAt",
+          sortable: false,
+          align: "start",
+        },
         {
           text: "الاجرائات",
           value: "actions",
@@ -204,32 +237,120 @@ export default {
         },
       ],
       items: [],
+      rules: [(v) => !!v || "لا يمكنك ترك الحقل فارغ"],
+      editDialog: false,
+      editFormModel: false,
+
+      createDialog: false,
+      createFormModel: false,
+      teacherForm: {
+        teacherId: "",
+        teacherName: null,
+        phone: null,
+        specialization: null,
+      },
     };
   },
 
+  filters: {
+    formatDate(date) {
+      return moment(date).format("DD/MM/YYYY HH:mm a");
+    }
+  },
+
   methods: {
-    async GetTeachers() {
+    // fetch data from teachers api
+    async fetch() {
       try {
         const teachers = await this.axios.get("teachers");
-        this.items = teachers.data;
+        this.items = teachers.data.data;
       } catch (error) {
-        console.log(error);
+        this.$toasted.error(
+          "حدث خطأ ما يرجى التحقق من اتصال الانترنت والمحاولة مرة اخرى",
+          {
+            position: "top-center",
+            duration: 3000,
+          }
+        );
       }
     },
 
-    async createTeacher() {
-      try {
-        if (this.$refs.createRef.validate()) {
-          const teacher = await this.axios.post("teachers", {
-            teacherName: this.teacherName,
+    // create teachers
+    async create() {
+      if (this.$refs.createFormRef.validate()) {
+        try {
+          const teachers = await this.axios.post("teachers", {
+            teacherName: this.teacherForm.teacherName,
+            phone: this.teacherForm.phone,
+            specialization: this.teacherForm.specialization,
+            createdBy: this.$store.state.user.userId,
           });
-          this.items.push(teacher.data);
-          this.teacherName = "";
-          this.newTeacherDialog = false;
+
+          this.fetch();
+          this.cancelEdit();
+          this.createDialog = false;
+          this.$toasted.success("تم اضافة البيانات بنجاح", {
+            position: "top-center",
+            duration: 3000,
+          });
+        } catch (error) {
+          console.error(error);
         }
-      } catch (error) {
-        console.log(error);
       }
+    },
+
+    // update teachers
+    async update() {
+      if (this.$refs.editFormRef.validate()) {
+        try {
+          const teachers = await this.axios.put(
+            `teachers/${this.teacherForm.teacherId}`,
+            {
+              teacherName: this.teacherForm.teacherName,
+              phone: this.teacherForm.phone,
+              specialization: this.teacherForm.specialization,
+            }
+          );
+          this.fetch();
+          this.$toasted.success("تم تعديل البيانات بنجاح", {
+            position: "top-center",
+            duration: 3000,
+          });
+          this.cancelEdit();
+        } catch (error) {
+          console.error(error);
+          this.$toasted.error(
+            "حدث خطأ في تحديث البيانات يرجى التحقق من صحة البيانات المدخلة",
+            {
+              position: "top-center",
+              duration: 3000,
+            }
+          );
+        }
+      }
+    },
+
+    // open edit dialog
+    edit(item) {
+      this.teacherForm = {
+        teacherId: item.teacherId,
+        teacherName: item.teacherName,
+        phone: item.phone,
+        specialization: item.specialization,
+      };
+
+      this.editDialog = true;
+    },
+
+    // cancel edit dialog
+    cancelEdit() {
+      this.editDialog = false;
+      this.teacherForm = {
+        teacherId: null,
+        teacherName: null,
+        phone: null,
+        specialization: null,
+      };
     },
 
     confirmDeleteTeacher(item) {
@@ -241,7 +362,7 @@ export default {
           {
             text: "حذف الاستاذ",
             onClick: () => {
-              this.deleteTeacher(item.teacherId);
+              this.deleteTeacher(item);
               this.$toasted.clear();
             },
           },
@@ -255,43 +376,18 @@ export default {
       });
     },
 
-    editTeacher(item) {
-      this.updateTeacherDialog = true;
-      this.teacherName = item.teacherName;
-      this.teacherId = item.teacherId;
-    },
-
-    async updateTeacher() {
+    async deleteTeacher(item) {
       try {
-        if (this.$refs.updateRef.validate()) {
-          const teacher = await this.axios.put(`teachers/${this.teacherId}`, {
-            teacherName: this.teacherName,
-          });
-
-          this.teacherName = "";
-          this.teacherId = "";
-          this.updateTeacherDialog = false;
-          console.log(teacher);
-          this.GetTeachers();
-        }
+        const teacher = await this.axios.delete(`teachers/${item.teacherId}`);
+        this.fetch();
       } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async deleteTeacher(id) {
-      try {
-        const teacher = await this.axios.delete(`teachers/${id}`);
-        console.log(teacher);
-        this.GetTeachers();
-      } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     },
   },
 
   mounted() {
-    this.GetTeachers();
+    this.fetch();
   },
 };
 </script>

@@ -8,6 +8,8 @@ export default new Vuex.Store({
     token: localStorage.getItem('token') || null,
     user: JSON.parse(localStorage.getItem('user')) || null,
     isLoggedIn: !!localStorage.getItem('token') || false,
+    appName: localStorage.getItem('appName') || null,
+    appVersion: localStorage.getItem('appVersion') || null,
   },
   getters: {
     isLoggedIn: (state) => state.isLoggedIn,

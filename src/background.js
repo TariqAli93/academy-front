@@ -10,13 +10,16 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
+let win;
+let splash;
 async function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 1200,
     height: 900,
-    minWidth: 800,
-    minHeight: 600,
+    minWidth: 1200,
+    minHeight: 900,
+    show: false,
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
@@ -38,6 +41,22 @@ async function createWindow() {
   win.setIcon(__static + '/icons/icon.ico')
 }
 
+async function createSplash() {
+  splash = new BrowserWindow({
+    width: 500,
+    height: 300,
+    show: true,
+    frame: false,
+    alwaysOnTop: true,
+    center: true,
+  })
+
+  splash.loadURL(__static + '/splashscreen.html')
+  splash.setMenu(null)
+  splash.setTitle('برنامج المعاهد')
+  splash.setIcon(__static + '/icons/icon.ico')
+}
+
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
@@ -56,7 +75,8 @@ app.on('activate', () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', async () => {
+
+app.on('ready', async (event) => {
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
@@ -65,7 +85,16 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+  
+  createSplash()
   createWindow()
+
+  if(event.sender.isReady) {
+    setTimeout(() => {
+      win.show()
+      splash.close()
+    }, 10000)
+  }
 })
 
 // Exit cleanly on request from parent process in development mode.
