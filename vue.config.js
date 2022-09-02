@@ -22,7 +22,7 @@ module.exports = {
           provider: "github",
           owner: "TariqAli93",
           repo: "acountant",
-          token: "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",
+          token: "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",
           releaseType: "draft",
         },
         appId: "com.codel.academy",
