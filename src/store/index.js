@@ -10,11 +10,13 @@ export default new Vuex.Store({
     isLoggedIn: !!localStorage.getItem('token') || false,
     appName: localStorage.getItem('appName') || null,
     appVersion: localStorage.getItem('appVersion') || null,
+    loading: false,
   },
   getters: {
     isLoggedIn: (state) => state.isLoggedIn,
     user: (state) => state.user,
     token: (state) => state.token,
+    isLoading: (state) => state.loading,
   },
   mutations: {
     setToken(state, token) {
@@ -31,6 +33,14 @@ export default new Vuex.Store({
       state.user = null
       state.isLoggedIn = false
     },
+
+    startLoading(state) {
+      state.loading = true
+    },
+
+    stopLoading(state) {
+      state.loading = false
+    }
   },
   actions: {
     setToken({ commit }, token) {
@@ -44,6 +54,14 @@ export default new Vuex.Store({
     logout({ commit }) {
       commit('logout')
     },
+
+    startLoading({ commit }) {
+      commit('startLoading')
+    },
+
+    stopLoading({ commit }) {
+      commit('stopLoading')
+    }
   },
   modules: {},
 })

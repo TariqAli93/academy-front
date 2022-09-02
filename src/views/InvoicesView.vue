@@ -33,6 +33,10 @@
           {{ item.amount | currency }}
         </template>
 
+        <template #[`item.monthlyPaid`]="{ item }">
+          {{ item.monthlyPaid | currency }}
+        </template>
+
         <template #[`item.remaining`]="{ item }">
           {{ (item.remaining - item.discount) | currency }}
         </template>
@@ -94,7 +98,18 @@ export default {
           sortable: false,
           align: "start",
         },
-
+        {
+          text: "عدد الاقساط",
+          value: "installment",
+          sortable: false,
+          align: "start",
+        },
+        {
+          text: "القسط الشهري",
+          value: "monthlyPaid",
+          sortable: false,
+          align: "start",
+        },
         {
           text: "مبلغ الخصم",
           value: "discount",
@@ -144,7 +159,7 @@ export default {
         return acc + course.coursePrice * 1;
       }, 0);
 
-      return price.toLocaleString("ar-AE", {
+      return price.toLocaleString("ar-US", {
         style: "currency",
         currency: "IQD",
       });
@@ -152,7 +167,7 @@ export default {
 
     currency(value) {
       const price = value * 1;
-      return price.toLocaleString("ar-AE", {
+      return price.toLocaleString("ar-US", {
         style: "currency",
         currency: "IQD",
       });
@@ -167,9 +182,11 @@ export default {
     },
 
     discount(item) {
-      return item.discount.toLocaleString("ar-AE", {
+      return item.discount.toLocaleString("ar-US", {
         style: "currency",
         currency: "IQD",
+        currencyDisplay: "symbol",
+        localeMatcher: "lookup",
       });
     },
   },
@@ -179,6 +196,7 @@ export default {
       try {
         const { data } = await this.axios.get("invoices");
         this.invoices = data.data;
+        console.log(data);
       } catch (error) {
         console.error(error);
       }
@@ -230,6 +248,8 @@ export default {
         createdAt: item.createdAt,
         discount: item.discount,
         amount: item.amount,
+        installment: item.installment,
+        monthlyPaid: item.monthlyPaid,
         totalCoursePrice: item.courses.reduce((acc, course) => {
           return acc + course.coursePrice * 1;
         }, 0),

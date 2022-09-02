@@ -90,6 +90,7 @@ export default {
       amount: 0 * 1,
       remaining: 0 * 1,
       idCourse: "",
+      monthlyPaid: 0 * 1,
     },
     rules: [(v) => !!v || "لا يمكنك ترك الحقل فارغ"],
     students: [],
@@ -107,6 +108,10 @@ export default {
       this.createForm.remaining = coursesPrice - this.createForm.amount;
 
       const paid = coursesPrice / this.createForm.installment;
+
+      this.createForm.monthlyPaid = Number(paid);
+
+      console.log(this.createForm.monthlyPaid);
 
       return paid.toLocaleString("ar-AR", {
         style: "currency",
@@ -143,6 +148,7 @@ export default {
             createdBy: this.createForm.createdBy * 1,
             amount: this.createForm.amount * 1,
             remaining: this.createForm.remaining * 1,
+            monthlyPaid: this.createForm.monthlyPaid * 1,
             idCourse: this.createForm.idCourse,
           };
 

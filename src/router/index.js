@@ -57,6 +57,11 @@ const routes = [
     path: '/reports',
     name: 'reports',
     component: ReportView,
+  },
+  {
+    path: '/users',
+    name: 'users',
+    component: () => import('@/views/UsersView.vue'),
   }
 ]
 

@@ -10,6 +10,8 @@ import VueAxios from 'vue-axios'
 import Toasted from 'vue-toasted';
 import VueJWT from 'vuejs-jwt'
 
+
+
 Vue.use(VueAxios, axios)
 Vue.use(Toasted)
 Vue.use(VueJWT)
@@ -19,19 +21,26 @@ let token = localStorage.getItem('token') || null;
 const devServer = 'http://localhost:6500/api/';
 const prodServer = 'http://217.71.202.185/api/';
 
-axios.defaults.baseURL = `${devServer}`;
+axios.defaults.baseURL = `${prodServer}`;
 axios.defaults.headers.common['Authorization'] = token !== null ? `Bearer ${token}` : null;
 
-axios.interceptors.request.use(
-  function (config) {
-    const access_token = store.getters.token
-    if (access_token) config.headers.Authorization = `Bearer ${access_token}`;
-    return config;
-  },
-  function (error) {
-    return Promise.reject(error);
-  }
-);
+axios.interceptors.request.use((config) => {
+  const access_token = store.getters.token
+  store.dispatch('startLoading')
+  if (access_token) config.headers.Authorization = `Bearer ${access_token}`;
+  return config;
+}, (error) => {
+  store.dispatch('stopLoading')
+  return Promise.reject(error);
+});
+
+axios.interceptors.response.use((response) => {
+  store.dispatch('stopLoading')
+  return response;
+}, (error) => {
+  store.dispatch('stopLoading')
+  return Promise.reject(error);
+});
 
 axios.interceptors.response.use(
   (response) => response,

@@ -81,22 +81,25 @@ const bill = (item) => {
         worksheet.getRow(lastRowAfterData).values = [
             "سعر الفاتورة",
             "الخصم على الفاتورة",
+            "عدد الاقساط",
         ];
 
         worksheet.getRow(lastRowAfterData + 1).values = [
             `${item.totalCoursePrice} - ${tafqeet(item.totalCoursePrice)} دينار عراقي`,
             `${item.discount} - ${tafqeet(item.discount)} دينار عراقي`,
+            `${item.installment} - ${tafqeet(item.installment)}`,
         ];
 
         worksheet.getRow(lastRowAfterData + 3).values = [
             "المبلغ الواصل",
             "المبلغ المتبقي",
-            'الملاحظات',
+            'القسط الشهري',
         ];
 
         worksheet.getRow(lastRowAfterData + 4).values = [
             `${item.amount} - ${tafqeet(item.amount)} دينار عراقي`,
             `${item.remaining} - ${tafqeet(item.remaining)} دينار عراقي`,
+            `${item.monthlyPaid} - ${tafqeet(item.monthlyPaid)} دينار عراقي`,
         ];
 
         worksheet.getRow(lastRowAfterData).eachCell((cell) => {

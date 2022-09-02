@@ -153,7 +153,7 @@ export default {
 
     currency(value) {
       const price = value * 1;
-      return price.toLocaleString("ar-AE", {
+      return price.toLocaleString("ar-US", {
         style: "currency",
         currency: "IQD",
       });

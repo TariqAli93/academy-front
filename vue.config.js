@@ -6,12 +6,27 @@ module.exports = defineConfig({
 })
 
 module.exports = {
+  // configureWebpack: config => {
+  //   config.externals = {
+  //     'better-sqlite3': 'commonjs better-sqlite3'
+  //   };
+  // },
+
   pluginOptions: {
     electronBuilder: {
       nodeIntegration: true,
+      // externals: ['better-sqlite3'],
       builderOptions: {
+        // extraResources: ['better-sqlite3'],
+        publish: {
+          provider: "github",
+          owner: "TariqAli93",
+          repo: "acountant",
+          token: "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",
+          releaseType: "draft",
+        },
         appId: "com.codel.academy",
-        productName: "برنامج المعاهد",
+        productName: "حسابات المعهد",
 
         win: {
           target: 'nsis',
@@ -19,7 +34,7 @@ module.exports = {
         },
         nsis: {
           oneClick: false,
-          artifactName: "academy.exe",
+          artifactName: "academy1.0.0.exe",
           allowElevation: true,
           deleteAppDataOnUninstall: true,
           runAfterFinish: true,
@@ -29,7 +44,7 @@ module.exports = {
           installerHeaderIcon: "./public/icons/icon.ico",
           createDesktopShortcut: true,
           createStartMenuShortcut: true,
-          shortcutName: "برنامج المعاهد",
+          shortcutName: "حسابات المعهد",
           perMachine: true,
         },
       }

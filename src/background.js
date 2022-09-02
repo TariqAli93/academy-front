@@ -1,14 +1,23 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, globalShortcut, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
-const isDevelopment = process.env.NODE_ENV !== 'production'
+// import path from 'path'
+// import Database from 'better-sqlite3';
 
+const isDevelopment = process.env.NODE_ENV !== 'production'
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
+
+// const pathToDbFile = path.join(
+//   isDevelopment ? __static : __dirname,
+//   './database/database.db',
+// );
+
+// const db = new Database(pathToDbFile);
 
 let win;
 let splash;
@@ -17,9 +26,10 @@ async function createWindow() {
   win = new BrowserWindow({
     width: 1200,
     height: 900,
-    minWidth: 1200,
-    minHeight: 900,
+    minWidth: 1000,
+    minHeight: 700,
     show: false,
+    frame: false,
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
@@ -37,8 +47,11 @@ async function createWindow() {
   }
 
   win.setMenu(null)
-  win.setTitle('برنامج المعاهد')
+  win.setTitle('حسابات المعهد')
   win.setIcon(__static + '/icons/icon.ico')
+
+  // const users = db.prepare('SELECT * FROM users').all();
+  // console.log(users)
 }
 
 async function createSplash() {
@@ -85,16 +98,28 @@ app.on('ready', async (event) => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-  
+
   createSplash()
   createWindow()
 
-  if(event.sender.isReady) {
+  if (event.sender.isReady) {
     setTimeout(() => {
       win.show()
       splash.close()
     }, 10000)
   }
+
+  globalShortcut.register('CommandOrControl+Shift+I', () => win.webContents.openDevTools())
+
+  ipcMain.on('quit', () => {
+    app.quit()
+  })
+  ipcMain.on('maximize', () => {
+    win.isMaximized() ? win.unmaximize() : win.maximize()
+  })
+  ipcMain.on('minimize', () => {
+    win.minimize()
+  })
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -111,3 +136,6 @@ if (isDevelopment) {
     })
   }
 }
+
+
+export default app

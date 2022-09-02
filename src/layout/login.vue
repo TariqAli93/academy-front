@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main>
+    <v-main class="loginMain">
       <div class="login-container">
         <h1>{{ settings.appName }}</h1>
         <div class="form-container">
@@ -26,6 +26,10 @@ export default {
 </script>
 
 <style lang="scss">
+.loginMain {
+  padding-top: 0 !important;
+}
+
 .login-container {
   height: 100%;
   width: 100%;

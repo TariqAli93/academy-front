@@ -1,12 +1,10 @@
 <template>
   <div class="flex-box">
-    <h1 class="primary--text">روابط سريعة</h1>
     <div
       class="
         d-flex
-        flex-sm-column flex-md-row
         align-center
-        justify-space-between
+        justify-center
       "
     >
       <router-link to="/teachers" class="box" :class="IS_DISABLED">
@@ -70,8 +68,7 @@ export default {
 
 <style lang="scss">
 .flex-box {
-  height: calc(100vh - 200px);
-  width: 850px;
+  height: calc(100vh - 355px);
   margin-inline: auto;
   display: flex;
   flex-direction: column;
@@ -106,11 +103,12 @@ export default {
       opacity: 0.5;
       cursor: not-allowed;
       pointer-events: none;
+      display: none;
     }
 
-    @media (max-width: 768px) {
-      margin-bottom: 1em;
-    }
+    // @media (max-width: 768px) {
+    //   margin-bottom: 1em;
+    // }
 
     i {
       font-size: 4em;

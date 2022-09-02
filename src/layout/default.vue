@@ -7,16 +7,9 @@
       stateless
       app
       color="primary"
+      width="200px"
       dark
     >
-      <v-list-item style="height: 64px">
-        <v-list-item-content>
-          <v-list-item-title> {{ settings.appName }} </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-divider />
-
       <v-list dense nav>
         <v-list-item
           v-for="item in list"
@@ -40,11 +33,12 @@
       height="65px"
       app
       elevation="0"
+      color="primary"
       style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)"
     >
-      <v-app-bar-nav-icon
-        @click.stop="miniVariant = !miniVariant"
-      ></v-app-bar-nav-icon>
+      <v-toolbar-title class="white--text">{{
+        settings.appName
+      }}</v-toolbar-title>
 
       <v-spacer />
 
@@ -62,14 +56,22 @@
       </v-menu>
     </v-app-bar>
 
-    <v-main>
+    <v-main class="defaultMain">
       <v-container fluid>
         <router-view />
       </v-container>
     </v-main>
 
-    <v-footer style="border-top: 1px solid rgba(0, 0, 0, 0.12)" app inset>
-      <v-btn depressed @click="devInfo = true"> تواصل معنا </v-btn>
+    <v-footer
+      color="primary"
+      dark
+      style="border-top: 1px solid rgba(0, 0, 0, 0.12)"
+      app
+      inset
+    >
+      <v-btn color="primary" depressed @click="devInfo = true">
+        تواصل معنا
+      </v-btn>
       <v-spacer />
       <span> الاصدار: {{ settings.appVersion }} </span>
     </v-footer>
@@ -139,7 +141,7 @@ export default {
   name: "defaultView",
   data() {
     return {
-      miniVariant: true,
+      miniVariant: false,
       drawer: true,
       settings: settings,
       devInfo: false,
@@ -153,31 +155,31 @@ export default {
           title: "الاساتذة",
           icon: "people_alt",
           path: "/teachers",
-          disabled: this.$store.state.user.role === "USER"
+          disabled: this.$store.state.user.role === "USER",
         },
         {
           title: "الصفوف",
           icon: "dashboard",
           path: "/classes",
-          disabled: this.$store.state.user.role === "USER"
+          disabled: this.$store.state.user.role === "USER",
         },
         {
           title: "المواد",
           icon: "library_books",
           path: "/subjects",
-          disabled: this.$store.state.user.role === "USER"
+          disabled: this.$store.state.user.role === "USER",
         },
         {
           title: "القاعات",
           icon: "meeting_room",
           path: "/halls",
-          disabled: this.$store.state.user.role === "USER"
+          disabled: this.$store.state.user.role === "USER",
         },
         {
           title: "الكورسات",
           icon: "menu_book",
           path: "/courses",
-          disabled: this.$store.state.user.role === "USER"
+          disabled: this.$store.state.user.role === "USER",
         },
         {
           title: "الطلاب",
@@ -188,7 +190,13 @@ export default {
           title: "التقارير",
           icon: "analytics",
           path: "/reports",
-          disabled: this.$store.state.user.role === "USER"
+          disabled: this.$store.state.user.role === "USER",
+        },
+        {
+          title: "المستخدمين",
+          icon: "group_add",
+          path: "/users",
+          disabled: this.$store.state.user.role === "USER",
         },
         {
           title: "الفواتير",
@@ -215,11 +223,37 @@ export default {
     },
 
     showList() {
-      return this.$store.getters.user.role === 'ADMIN';
+      return this.$store.getters.user.role === "ADMIN";
     },
   },
 };
 </script>
 
-<style>
+<style lang="scss">
+body,
+html,
+.v-application {
+  background-color: var(--v-primary-base) !important;
+}
+.defaultMain {
+  padding-top: 100px !important;
+  padding-bottom: 50px !important;
+  padding-right: 200px !important;
+  box-shadow: 0 2px 0 0 rgba(black, 0.2);
+  background-color: transparent !important;
+  pointer-events: none !important;
+
+  .v-main__wrap {
+    background-color: whitesmoke !important;
+    border-top-right-radius: 2rem;
+    border-bottom-right-radius: 2rem;
+    // border-radius: 2rem !important;
+    padding: 2.5rem 1.5rem !important;
+    pointer-events: auto !important;
+    box-shadow: 0px 0px 30px 0px inset rgba(black, .30);
+  }
+}
+.v-navigation-drawer__border {
+  display: none !important;
+}
 </style>

@@ -45,36 +45,38 @@
       </v-date-picker>
     </v-dialog>
 
-    <v-data-table
-      :items="reports"
-      :headers="headers"
-      class="transparent elevation-0"
-      id="reportTable"
-    >
-      <template #[`item.remainingPercentage`]="{ item }">
-        {{ item | countPercentage }}
-      </template>
+    <v-card elevation="0">
+      <v-data-table
+        :items="reports"
+        :headers="headers"
+        class="transparent elevation-0"
+        id="reportTable"
+      >
+        <template #[`item.remainingPercentage`]="{ item }">
+          {{ item | countPercentage }}
+        </template>
 
-      <template #[`item.percentage`]="{ item }">
-        {{ item.percentage + "%" }}
-      </template>
+        <template #[`item.percentage`]="{ item }">
+          {{ item.percentage + "%" }}
+        </template>
 
-      <template #[`item.academyPrice`]="{ item }">
-        {{ item | countAcadmyPrice }}
-      </template>
+        <template #[`item.academyPrice`]="{ item }">
+          {{ item | countAcadmyPrice }}
+        </template>
 
-      <template #[`item.teacherPrice`]="{ item }">
-        {{ item | countTeacherPrice }}
-      </template>
+        <template #[`item.teacherPrice`]="{ item }">
+          {{ item | countTeacherPrice }}
+        </template>
 
-      <template #[`item.coursePrice`]="{ item }">
-        {{ item.coursePrice | currency }}
-      </template>
+        <template #[`item.coursePrice`]="{ item }">
+          {{ item.coursePrice | currency }}
+        </template>
 
-      <template #[`item.discount`]="{ item }">
-        {{ item.discount | currency }}
-      </template>
-    </v-data-table>
+        <template #[`item.discount`]="{ item }">
+          {{ item.discount | currency }}
+        </template>
+      </v-data-table>
+    </v-card>
 
     <a class="d-none" id="dlink"></a>
   </div>
@@ -159,7 +161,7 @@ export default {
         let academyPrice =
           coursePrice * studentCount - discount - percent_amount;
 
-        return academyPrice.toLocaleString("ar-AE", {
+        return academyPrice.toLocaleString("ar-US", {
           style: "currency",
           currency: "IQD",
         });
@@ -173,16 +175,15 @@ export default {
         let studentCount = value.StudentCourses.length;
         let coursePrice = value.coursePrice;
         let discount = value.discount;
-        let per_num = coursePrice * studentCount
-        let percent_amount =
-          (value.percentage / 100) * per_num;
+        let per_num = coursePrice * studentCount;
+        let percent_amount = (value.percentage / 100) * per_num;
 
         let academyPrice =
           coursePrice * studentCount - discount - percent_amount;
 
         let teacherPrice = Math.abs(academyPrice - per_num);
 
-        return teacherPrice.toLocaleString("ar-AE", {
+        return teacherPrice.toLocaleString("ar-US", {
           style: "currency",
           currency: "IQD",
         });
@@ -193,7 +194,7 @@ export default {
 
     currency(value) {
       const price = value * 1;
-      return price.toLocaleString("ar-AE", {
+      return price.toLocaleString("ar-US", {
         style: "currency",
         currency: "IQD",
       });
